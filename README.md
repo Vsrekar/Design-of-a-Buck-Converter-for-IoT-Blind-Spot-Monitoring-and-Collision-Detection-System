@@ -26,6 +26,7 @@ Design and implement an IoT-based system that continuously monitors vehicle
 blind spots and detects collision events, providing real-time alerts and  
 notifications to enhance driver safety.
 
+
 # Electronic System Design
 ## 2.1 Object Detection Technologies
 
@@ -62,6 +63,7 @@ Ultrasonic sensing is selected for this project due to its low cost, simplicity,
 
 **Fig 1.4 Simulation of blind spot Detection using ESP32** 
 
+
 # Hardware Realization  
 
 ## 3.1 Results 
@@ -86,10 +88,35 @@ practical feasibility of the proposed system.
 
 **Fig 1.6 Testing of hardware implementation of the system**
 
+<img width="451" height="372" alt="image" src="https://github.com/user-attachments/assets/24a76c04-71bf-4a04-93f8-a0a246e85253" />
+**Fig 1.7 IoT notification send to Car owner indicating parking threat**
+ 
+
 ## 3.2 Performance parameters 
 <img width="629" height="639" alt="image" src="https://github.com/user-attachments/assets/d28e1b92-8174-4ebd-ab00-4aeae09241bf" />
 
 
+# Discussion on Results 
+
+The experimental results demonstrate that the proposed system performs 
+reliably under different operating conditions. The LM2596 buck converter 
+provided a stable 5 V output with minimal voltage ripple, ensuring uninterrupted 
+operation of the ESP32 and sensors. 
+The ultrasonic sensors showed good accuracy within the expected detection 
+range and were effective in identifying blind-spot objects and collision events. 
+The response time of the system was found to be less than one second, which is 
+suitable for real-time vehicle safety applications. 
+ 
+PCB implementation improved system stability by reducing loose connections 
+and electrical noise. Compared to the breadboard setup, the PCB-based system 
+showed better mechanical strength and consistent performance. 
+The IoT module successfully transmitted alert notifications with minimal delay, 
+enhancing user awareness during critical situations. Overall, the system met the 
+design objectives and demonstrated satisfactory performance for low-cost 
+vehicle safety applications. 
+Minor variations in voltage and sensor readings were observed due to 
+environmental factors and load changes. However, these variations were within 
+acceptable limits and did not affect system functionality
 
 
 
