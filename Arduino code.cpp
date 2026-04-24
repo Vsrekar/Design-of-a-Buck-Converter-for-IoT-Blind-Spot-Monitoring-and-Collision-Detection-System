@@ -1,0 +1,102 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+// Note: Replace Wi-Fi credentials and Telegram bot details with your own before running the code.
+//wifi 
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";
+//telegram
+String botToken = "YOUR_TELEGRAM_BOT_TOKEN";
+String chatID   = "YOUR_CHAT_ID";
+
+// -------- Pins --------
+#define TRIG1 13
+#define ECHO1 12
+#define LED1  25
+
+#define TRIG2 27
+#define ECHO2 26
+#define LED2  33
+
+#define ALERT_LED 14 //BUZZER
+#define SWITCH_PIN 32
+
+long duration;
+float dist1, dist2;
+
+// -------- Telegram Function --------
+void sendMessage(String text) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    String url = "https://api.telegram.org/bot" + botToken +
+                 "/sendMessage?chat_id=" + chatID +
+                 "&text=" + text;
+    http.begin(url);
+    http.GET();
+    http.end();
+  }
+}
+
+// -------- Distance Function --------
+float readDistance(int trigPin, int echoPin) {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH, 25000);
+  return (duration * 0.034) / 2;
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(TRIG1, OUTPUT);
+  pinMode(ECHO1, INPUT);
+  pinMode(LED1, OUTPUT);
+
+  pinMode(TRIG2, OUTPUT);
+  pinMode(ECHO2, INPUT);
+  pinMode(LED2, OUTPUT);
+
+  pinMode(ALERT_LED, OUTPUT);
+  pinMode(SWITCH_PIN, INPUT_PULLUP);
+
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+  }
+}
+
+void loop() {
+  dist1 = readDistance(TRIG1, ECHO1);
+  dist2 = readDistance(TRIG2, ECHO2);
+
+  bool mode = digitalRead(SWITCH_PIN);
+
+  // -------- Blindspot Mode --------
+  if (mode == HIGH) {
+    if (dist1 < 50) digitalWrite(LED1, !digitalRead(LED1));
+    else digitalWrite(LED1, LOW);
+
+    if (dist2 < 50) digitalWrite(LED2, !digitalRead(LED2));
+    else digitalWrite(LED2, LOW);
+
+    digitalWrite(ALERT_LED, LOW);
+  }
+
+  // -------- Parking Mode --------
+  else {
+    digitalWrite(LED1, LOW);
+    digitalWrite(LED2, LOW);
+
+    if (dist1 < 50 || dist2 < 50) {
+      digitalWrite(ALERT_LED, HIGH);
+      sendMessage("⚠️ Parking alert: Object detected within 0.5 m");
+      delay(5000);
+      digitalWrite(ALERT_LED, LOW);
+    }
+  }
+
+  delay(200);
+}
